@@ -3,519 +3,512 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gestor Pool Minimal</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Gestor Trader · Pool Compartido</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
-    :root {
-      --bg: #101322;
-      --panel: #171b2b;
-      --text: #e6edf3;
-      --muted: #8a93a8;
-      --accent: #2196f3;
-      --border: #22273a;
-      --radius: 10px;
-    }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; }
-    header { padding:18px 0 8px 0; border-bottom:1px solid var(--border); }
-    .container { max-width:900px; margin:0 auto; padding:0 12px; }
-    .brand { font-weight:700; font-size:18px; letter-spacing:.5px; display:flex; align-items:center; gap:10px; }
-    .tabs { display:flex; gap:6px; margin:12px 0; }
-    .tab-btn { background:var(--panel); color:var(--text); border:none; border-radius:var(--radius); padding:8px 16px; cursor:pointer; font-size:15px; }
-    .tab-btn.active { background:var(--accent); color:#fff; }
-    main { margin:30px auto; max-width:900px; padding:0 12px; }
-    .card { background:var(--panel); border-radius:var(--radius); padding:18px; margin-bottom:18px; border:1px solid var(--border);}
-    h2 { font-size:20px; margin-bottom:10px; font-weight:700; }
-    h3 { font-size:16px; margin-bottom:6px; font-weight:600; }
-    label { font-size:13px; color:var(--muted); margin-bottom:2px; display:block; }
-    input, select { width:100%; background:#12152a; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:7px 10px; font-size:15px; margin-bottom:8px; }
-    input:focus, select:focus { outline:1px solid var(--accent); }
-    button, .btn { background:var(--accent); color:#fff; border:none; border-radius:7px; padding:9px 16px; font-size:15px; cursor:pointer; margin-top:6px; }
-    .btn.secondary { background:var(--panel); color:var(--text); border:1px solid var(--border);}
-    table { width:100%; border-collapse:collapse; font-size:14px; margin-top:8px;}
-    th, td { padding:8px 5px; border-bottom:1px solid var(--border);}
-    th { color:var(--muted); font-weight:500; }
-    tr:last-child td { border-bottom:none;}
-    .num { text-align:right;}
-    .pill { font-size:12px; background:#101322; color:var(--accent); border-radius:6px; padding:2px 8px;}
-    .mt { margin-top:10px;}
-    .flex { display:flex; gap:10px; }
-    .mb { margin-bottom:10px;}
-    .notice { background:#141728; color:var(--muted); font-size:13px; padding:7px 10px; border-radius:7px;}
-    canvas { background:#101322; margin-top:8px; border-radius:7px;}
-    .hidden { display:none;}
-    .actions { display:flex; gap:6px; }
+    :root{ --bg:#0f1222; --panel:#161a31; --muted:#8a92b8; --text:#f2f4ff; --accent:#6cf1a6; --danger:#ff6b6b; --ok:#60d394; --border:rgba(255,255,255,.08); --radius:16px; --shadow:0 10px 25px rgba(0,0,0,.35) }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(80% 120% at 100% -20%, #1a1f3a 0%, #0f1222 60%), var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    header{position:sticky;top:0;z-index:20;backdrop-filter: blur(10px);background:linear-gradient(180deg, rgba(15,18,34,.9), rgba(15,18,34,.65));border-bottom:1px solid var(--border)}
+    .wrap{max-width:1200px;margin:0 auto;padding:14px 16px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .brand i{font-size:22px;color:var(--accent)}
+    .brand strong{font-weight:800;letter-spacing:.3px}
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .tab-btn{border:1px solid var(--border);background:linear-gradient(180deg,#1a1f39,#141832);padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer;transition:.15s}
+    .tab-btn.active{outline:2px solid var(--accent);color:#0a0f1e;background:linear-gradient(180deg,#baffda,#71f3ab);font-weight:700}
+    main{max-width:1200px;margin:22px auto;padding:0 16px 120px}
+    .tabpanel{display:none}.tabpanel.active{display:block}
+    .grid{display:grid;gap:14px}
+    .g1{grid-template-columns:1fr}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg,#1c2144,#171b37);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .pad{padding:16px}
+    h3{margin:0 0 8px 0;font-size:18px}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select{width:100%;background:#0f1330;border:1px solid var(--border);color:var(--text);border-radius:12px;padding:10px 12px;outline:none;font-size:14px}
+    input:focus,select:focus{border-color:#7cd6ff;box-shadow:0 0 0 3px rgba(124,214,255,.12)}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 12px;border:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--text);background:#1c2040}
+    .btn.primary{background:linear-gradient(180deg,#7bf1b6,#49d792);color:#0b1225;font-weight:800}
+    .btn.small{padding:6px 8px;border-radius:8px;font-size:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{text-align:left;padding:10px;border-bottom:1px dashed var(--border)}
+    th{color:var(--muted);font-weight:600}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px}
+    .right{text-align:right}.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+    .muted{color:var(--muted)}
+    .kpi{display:flex;gap:10px;align-items:baseline}.kpi .big{font-size:28px;font-weight:800}
+    .notice{background:#14213b;border:1px solid var(--border);padding:10px 12px;border-radius:12px}
+    .sticky-footer{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:10px;background:#11142b;border:1px solid var(--border);border-radius:999px;padding:8px 10px;box-shadow:var(--shadow)}
+
+    /* Formularios rectangulares y fluidos */
+    .formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .wide{grid-column:1/-1}
   </style>
 </head>
 <body>
   <header>
-    <div class="container brand">
-      <i class="ti ti-chart-line" style="color:var(--accent);font-size:22px"></i>
-      Gestor Pool Minimal
-    </div>
-    <div class="container tabs">
-      <button class="tab-btn active" data-tab="dashboard">Tablero</button>
-      <button class="tab-btn" data-tab="ops">Movimientos</button>
-      <button class="tab-btn" data-tab="clients">Clientes</button>
-      <button class="tab-btn" data-tab="config">Config</button>
-    </div>
-  </header>
-  <main>
-    <!-- TABLERO -->
-    <section id="dashboard" class="card tabpanel active">
-      <h2>Tablero</h2>
-      <div class="flex mb">
+    <div class="wrap row">
+      <div class="brand" style="flex:2">
+        <i class="ti ti-chart-line"></i>
         <div>
-          <div class="pill">Pool actual</div>
-          <div id="k_pool" style="font-size:22px;">—</div>
-        </div>
-        <div>
-          <div class="pill">Trades</div>
-          <div id="k_trades" style="font-size:22px;">—</div>
-        </div>
-        <div>
-          <div class="pill">Comisiones</div>
-          <div id="k_comms" style="font-size:22px;">—</div>
+          <strong>Gestor de Pool Compartido · Trading</strong>
+          <div class="muted" style="font-size:12px">Pool único · Proporcional · Comisiones por cliente · Sync Sheets</div>
         </div>
       </div>
-      <h3>Curva del Pool</h3>
-      <canvas id="chartPool" height="120"></canvas>
-      <h3 class="mt">Participaciones</h3>
-      <table id="tblShares">
-        <thead>
-          <tr>
-            <th>Cliente</th><th class="num">Saldo</th><th class="num">%</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+      <div class="row" style="justify-content:flex-end;flex:3">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="clientes"><i class="ti ti-users"></i> Clientes</button>
+          <button class="tab-btn" data-tab="operaciones"><i class="ti ti-repeat"></i> Movimientos & Trades</button>
+          <button class="tab-btn" data-tab="tablero"><i class="ti ti-dashboard"></i> Tablero</button>
+          <button class="tab-btn" data-tab="config"><i class="ti ti-settings"></i> Configuración</button>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <!-- MOVIMIENTOS -->
-    <section id="ops" class="card tabpanel hidden">
-      <h2>Movimientos</h2>
-      <form id="txForm">
-        <div class="flex">
-          <div style="flex:2">
-            <label>Tipo</label>
-            <select id="t_type">
-              <option value="deposit">Depósito</option>
-              <option value="withdrawal">Retiro</option>
-              <option value="transfer">Transferencia</option>
-              <option value="trade">Trade (pool)</option>
-            </select>
-          </div>
-          <div style="flex:2">
-            <label>Fecha/hora</label>
-            <input id="t_datetime" type="datetime-local" />
-          </div>
-        </div>
-        <div class="flex">
-          <div style="flex:2" id="boxClient">
-            <label>Cliente</label>
-            <select id="t_client"></select>
-          </div>
-          <div style="flex:2" id="boxTransfer" class="hidden">
-            <label>De</label><select id="trf_from"></select>
-            <label>A</label><select id="trf_to"></select>
-            <label>Monto</label><input id="trf_amount" type="number" step="0.01" />
-          </div>
-        </div>
-        <div>
-          <label>Concepto/Símbolo</label>
-          <input id="t_symbol" />
-        </div>
-        <div id="boxMoney">
-          <label>Monto</label>
-          <input id="t_amount" type="number" step="0.01" />
-          <label>Nota</label>
-          <input id="t_note" />
-        </div>
-        <div id="boxTrade" class="hidden">
-          <label>Invertido (pool)</label>
-          <input id="tr_invested" type="number" step="0.01" />
-          <label>P&L realizado</label>
-          <input id="tr_pnl" type="number" step="0.01" />
-          <label>Fee broker</label>
-          <input id="tr_fees" type="number" step="0.01" value="0" />
-        </div>
-        <div class="flex mt">
-          <button class="btn" type="submit">Guardar</button>
-          <button class="btn secondary" type="button" id="btnNewTx">Nuevo</button>
-        </div>
-      </form>
-      <h3 class="mt">Historial</h3>
-      <table id="txTable">
-        <thead>
-          <tr>
-            <th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Concepto</th>
-            <th class="num">Monto</th><th class="num">P&L</th><th class="num">Fee</th>
-            <th class="num">Acciones</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
+  <main>
     <!-- CLIENTES -->
-    <section id="clients" class="card tabpanel hidden">
-      <h2>Clientes</h2>
-      <form id="clientForm">
-        <div class="flex">
-          <div style="flex:2">
-            <label>Nombre</label>
-            <input id="c_name" />
+    <section id="clientes" class="tabpanel active">
+      <div class="grid g2">
+        <div class="card pad">
+          <h3><i class="ti ti-user-plus"></i> Crear / Editar cliente</h3>
+          <div class="formgrid">
+            <div>
+              <label>Nombre</label>
+              <input id="c_name" placeholder="Ej. Ander" />
+            </div>
+            <div>
+              <label>Moneda</label>
+              <select id="c_currency"><option>USD</option><option>MXN</option><option>EUR</option></select>
+            </div>
+            <div>
+              <label>Comisión (% de su P&L)</label>
+              <input id="c_commission" type="number" min="0" step="0.01" placeholder="20" />
+            </div>
+            <div>
+              <label>Comisión activa</label>
+              <select id="c_commission_enabled"><option value="true">Sí</option><option value="false">No</option></select>
+            </div>
+            <div>
+              <label>Desde (fecha/hora) aplica comisión</label>
+              <input id="c_commission_start" type="datetime-local" />
+            </div>
+            <div class="wide">
+              <label>Notas</label>
+              <input id="c_notes" />
+            </div>
           </div>
-          <div style="flex:1">
-            <label>Moneda</label>
-            <select id="c_currency"><option>USD</option><option>MXN</option><option>EUR</option></select>
-          </div>
-          <div style="flex:1">
-            <label>Comisión (%)</label>
-            <input id="c_commission" type="number" step="0.01" />
-          </div>
-          <div style="flex:1">
-            <label>Comisión activa</label>
-            <select id="c_commission_enabled"><option value="true">Sí</option><option value="false">No</option></select>
+          <div class="row mt">
+            <button class="btn primary" id="btnSaveClient"><i class="ti ti-check"></i> Guardar</button>
+            <button class="btn" id="btnNewClient"><i class="ti ti-circle-plus"></i> Nuevo</button>
           </div>
         </div>
-        <label>Notas</label>
-        <input id="c_notes" />
-        <div class="flex mt">
-          <button class="btn" type="submit">Guardar</button>
-          <button class="btn secondary" type="button" id="btnNewClient">Nuevo</button>
+
+        <div class="card pad">
+          <div class="row" style="justify-content:space-between">
+            <h3><i class="ti ti-users-group"></i> Clientes</h3>
+            <input id="searchClient" placeholder="Buscar…" style="max-width:260px" />
+          </div>
+          <div class="mt" style="overflow:auto;max-height:420px">
+            <table id="clientsTable">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Aporte (saldo actual)</th>
+                  <th>Participación</th>
+                  <th>Comisión</th>
+                  <th class="right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
-      </form>
-      <h3 class="mt">Listado</h3>
-      <table id="clientsTable">
-        <thead>
-          <tr>
-            <th>Cliente</th><th>Aporte</th><th>Part.</th><th>Comisión</th><th class="num">Acciones</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      </div>
     </section>
 
-    <!-- CONFIG -->
-    <section id="config" class="card tabpanel hidden">
-      <h2>Config</h2>
-      <form id="settingsForm">
-        <label>Moneda por defecto</label>
-        <select id="s_currency"><option>USD</option><option>MXN</option><option>EUR</option></select>
-        <label>Formato local</label>
-        <select id="s_locale"><option>en-US</option><option>es-MX</option><option>es-ES</option></select>
-        <label>Comisión solo sobre P&L positivo</label>
-        <select id="s_positive_only"><option value="true">Sí</option><option value="false">No</option></select>
-        <button class="btn mt" type="submit">Guardar</button>
-      </form>
-      <div class="mt notice">
-        <b>Respaldo:</b>
-        <button class="btn secondary" id="btnExportJSON">Exportar JSON</button>
-        <label class="btn secondary" for="fileImport">Importar JSON</label>
-        <input id="fileImport" type="file" accept="application/json" style="display:none" />
+    <!-- OPERACIONES (Pool) -->
+    <section id="operaciones" class="tabpanel">
+      <div class="grid g1">
+        <div class="card pad">
+          <h3><i class="ti ti-database-plus"></i> Registrar movimiento</h3>
+          <div class="formgrid">
+            <div>
+              <label>Tipo</label>
+              <select id="t_type">
+                <option value="deposit">Depósito</option>
+                <option value="withdrawal">Retiro</option>
+                <option value="transfer">Transferencia (entre clientes)</option>
+                <option value="trade">Trade (pool)</option>
+              </select>
+            </div>
+            <div>
+              <label>Fecha y hora</label>
+              <input id="t_datetime" type="datetime-local" />
+            </div>
+            <div id="boxClient">
+              <label>Cliente (sólo depósito/retiro)</label>
+              <select id="t_client"></select>
+            </div>
+            <div id="boxTransfer" class="wide" style="display:none">
+              <div class="formgrid">
+                <div>
+                  <label>De (cliente)</label>
+                  <select id="trf_from"></select>
+                </div>
+                <div>
+                  <label>A (cliente)</label>
+                  <select id="trf_to"></select>
+                </div>
+                <div>
+                  <label>Monto a transferir</label>
+                  <input id="trf_amount" type="number" step="0.01" placeholder="0.00" />
+                </div>
+              </div>
+            </div>
+            <div class="wide">
+              <label>Concepto / Símbolo</label>
+              <input id="t_symbol" placeholder="Ej. BTCUSDT, AAPL / Motivo" />
+            </div>
+          </div>
+
+          <div id="boxMoney" class="formgrid mt">
+            <div>
+              <label>Monto</label>
+              <input id="t_amount" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="wide">
+              <label>Nota</label>
+              <input id="t_note" placeholder="Opcional" />
+            </div>
+          </div>
+
+          <div id="boxTrade" class="formgrid mt" style="display:none">
+            <div>
+              <label>Invertido (del pool)</label>
+              <input id="tr_invested" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div>
+              <label>P&L realizado</label>
+              <input id="tr_pnl" type="number" step="0.01" placeholder="0.00" />
+            </div>
+            <div>
+              <label>Fees broker</label>
+              <input id="tr_fees" type="number" step="0.01" value="0" />
+            </div>
+            <div>
+              <label>Recomendado (10% del pool en ese instante)</label>
+              <input id="tr_recommended" type="number" step="0.01" placeholder="Calcula…" readonly />
+            </div>
+            <div class="row">
+              <button class="btn" id="btnCalc10"><i class="ti ti-calculator"></i> Calcular 10%</button>
+              <button class="btn" id="btnUseRecommended"><i class="ti " ></i> Usar recomendado</button>
+            </div>
+          </div>
+
+          <div class="row mt">
+            <button class="btn primary" id="btnSaveTx"><i class="ti ti-check"></i> Guardar movimiento</button>
+            <button class="btn" id="btnNewTx"><i class="ti ti-circle-plus"></i> Nueva captura</button>
+          </div>
+          <p class="muted">Los trades del pool se reparten automáticamente a cada cliente según su % al momento exacto del trade.</p>
+        </div>
+
+        <div class="card pad">
+          <div class="row" style="justify-content:space-between">
+            <h3><i class="ti ti-history"></i> Historial</h3>
+            <div class="row" style="gap:6px;max-width:100%">
+              <input id="f_from" type="date" />
+              <input id="f_to" type="date" />
+              <button class="btn" id="btnFilter"><i class="ti ti-filter"></i> Filtrar</button>
+              <button class="btn" id="btnClearFilter"><i class="ti ti-x"></i> Limpiar filtro</button>
+            </div>
+          </div>
+          <div class="mt" style="overflow:auto;max-height:420px">
+            <table id="txTable">
+              <thead>
+                <tr>
+                  <th>Fecha</th><th>Tipo</th><th>Cliente/Pool</th><th>Concepto</th>
+                  <th class="right">Monto / Invertido</th><th class="right">P&L</th><th class="right">Fee</th><th class="right">Asignación</th><th class="right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card pad">
+          <h3><i class="ti ti-cash"></i> Corte de periodo (para comisiones diferidas)</h3>
+          <div class="formgrid">
+            <div>
+              <label>Desde</label>
+              <input id="p_from" type="datetime-local" />
+            </div>
+            <div>
+              <label>Hasta</label>
+              <input id="p_to" type="datetime-local" />
+            </div>
+            <div>
+              <label>Cobrar a favor de</label>
+              <select id="p_recipient"></select>
+            </div>
+          </div>
+          <div class="row mt">
+            <button class="btn" id="btnCalcPeriod"><i class="ti ti-calculator"></i> Calcular P&L por cliente</button>
+            <button class="btn primary" id="btnGenTransfers"><i class="ti ti-arrows-transfer-down"></i> Generar transferencias</button>
+          </div>
+          <div class="mt" id="periodResults"></div>
+          <p class="muted">Usa esto cuando quieras **cobrar comisiones** al final de un periodo (por ejemplo, cada semana o mes) sin retirar en cada trade. Se crean **transferencias** desde cada cliente hacia el receptor elegido.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLERO -->
+    <section id="tablero" class="tabpanel">
+      <div class="card pad">
+        <div class="grid g3">
+          <div class="notice">
+            <div class="kpi"><span class="muted">Pool actual</span><span class="big" id="k_pool">—</span></div>
+            <div class="kpi"><span class="muted">Trades</span><span class="big" id="k_trades">—</span></div>
+          </div>
+          <div class="notice">
+            <div class="kpi"><span class="muted">Depósitos</span><span class="big" id="k_deps">—</span></div>
+            <div class="kpi"><span class="muted">Retiros</span><span class="big" id="k_wds">—</span></div>
+          </div>
+          <div class="notice">
+            <div class="kpi"><span class="muted">Comisiones totales</span><span class="big" id="k_comms">—</span></div>
+            <div class="kpi"><span class="muted">P&L neto pool</span><span class="big" id="k_pnl">—</span></div>
+          </div>
+        </div>
+
+        <div class="grid g2 mt">
+          <div class="card pad">
+            <h3>Curva del pool</h3>
+            <canvas id="chartPool" height="140"></canvas>
+          </div>
+          <div class="card pad">
+            <h3>Participaciones actuales</h3>
+            <table id="tblShares"><thead><tr><th>Cliente</th><th>Saldo</th><th>%</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+
+        <div class="card pad mt">
+          <h3>Detalle por cliente</h3>
+          <div class="row" style="gap:8px">
+            <select id="d_client"></select>
+            <button class="btn" id="btnRefreshDash"><i class="ti ti-refresh"></i> Actualizar</button>
+          </div>
+          <div class="grid g3 mt">
+            <div class="notice"><div class="kpi"><span class="muted">Saldo actual</span><span class="big" id="dc_balance">—</span></div></div>
+            <div class="notice"><div class="kpi"><span class="muted">P&L asignado</span><span class="big" id="dc_pnl">—</span></div></div>
+            <div class="notice"><div class="kpi"><span class="muted">Comisión cobrada</span><span class="big" id="dc_comm">—</span></div></div>
+          </div>
+          <div class="card pad mt"><h3>Serie del cliente</h3><canvas id="chartClient" height="140"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONFIGURACIÓN / RESPALDO -->
+    <section id="config" class="tabpanel">
+      <div class="grid g2">
+        <div class="card pad">
+          <h3><i class="ti ti-cloud-upload"></i> Respaldo</h3>
+          <div class="row">
+            <button class="btn" id="btnExportJSON"><i class="ti ti-download"></i> Exportar JSON</button>
+            <label class="btn" for="fileImport"><i class="ti ti-upload"></i> Importar JSON</label>
+            <input id="fileImport" type="file" accept="application/json" style="display:none" />
+          </div>
+          <p class="muted">Datos locales (localStorage). Sube el HTML a GitHub Pages/Netlify para usarlo en iPhone/PC.</p>
+        </div>
+        <div class="card pad">
+          <h3><i class="ti ti-sliders"></i> Preferencias</h3>
+          <div class="grid g3">
+            <div>
+              <label>Moneda por defecto</label>
+              <select id="s_currency"><option>USD</option><option>MXN</option><option>EUR</option></select>
+            </div>
+            <div>
+              <label>Formato local</label>
+              <select id="s_locale"><option>en-US</option><option>es-MX</option><option>es-ES</option></select>
+            </div>
+            <div>
+              <label>Aplicar comisión sólo a P&L positivo</label>
+              <select id="s_positive_only"><option value="true">Sí</option><option value="false">No</option></select>
+            </div>
+          </div>
+          <button class="btn primary mt" id="btnSaveSettings"><i class="ti ti-device-floppy"></i> Guardar</button>
+        </div>
+      </div>
+
+      <div class="card pad" style="margin-top:14px">
+        <h3><i class="ti ti-database"></i> Sincronización con Google Sheets</h3>
+        <p>Se guardará en la pestaña <b>Automated data Base</b> del Sheets que compartiste.</p>
+        <p><a target="_blank" href="https://docs.google.com/spreadsheets/d/17bFcBCiKa8WDxFdb4_Aj8KCyCexfYl6vWIVgIDuPG2A/edit?usp=sharing">Abrir hoja</a></p>
+        <div class="row">
+          <button class="btn primary" id="btnSyncNow"><i class="ti ti-upload"></i> Subir datos ahora</button>
+          <button class="btn" id="btnLoadNow"><i class="ti ti-download"></i> Cargar datos de Sheets</button>
+          <label class="btn" style="display:inline-flex;align-items:center"><input type="checkbox" id="chkAutoSync" style="margin-right:8px"/> Auto‑sync al guardar</label>
+        </div>
+        <p class="muted">Necesitas publicar un <b>Apps Script → Web App</b> y pegar la URL debajo. Si no, verás error de conexión.</p>
+        <details style="margin-top:8px"><summary>Mostrar código de Apps Script</summary><pre style="white-space:pre-wrap"><code>const SHEET_NAME = 'Automated data Base';
+function ensureHeader_(sh){
+  const header = ['entity','id','datetime','type','clientId','fromId','toId','name','currency','commissionRate','commissionEnabled','commissionStart','notes','symbol','note','amount','invested','pnl','fees','settingsJson','_ts'];
+  if(sh.getLastRow()===0){ sh.appendRow(header); return; }
+  const cur=sh.getRange(1,1,1,header.length).getValues()[0];
+  if(JSON.stringify(cur)!==JSON.stringify(header)){ sh.clear(); sh.appendRow(header); }
+}
+function doPost(e){
+  const payload = JSON.parse(e.postData.contents||'{}');
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_NAME) || SpreadsheetApp.getActive().insertSheet(SHEET_NAME);
+  ensureHeader_(sh); if(sh.getLastRow()>1) sh.deleteRows(2, sh.getLastRow()-1);
+  const rows=[]; const now=new Date(); const st = payload.state || {};
+  (st.clients||[]).forEach(c=>{ rows.push(['client',c.id,'', '', '', '', '', c.name, c.currency, c.commissionRate, c.commissionEnabled, c.commissionStart||'', c.notes||'', '', '', '', '', '', '', '', now]); });
+  (st.txs||[]).forEach(t=>{ rows.push(['tx',t.id,t.datetime, t.type||'', t.clientId||'', t.fromId||'', t.toId||'', '', '', '', '', '', '', t.symbol||'', t.note||'', t.amount||'', t.invested||'', t.pnl||'', t.fees||'', '', now]); });
+  rows.push(['settings','settings','', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', JSON.stringify(st.settings||{}), now]);
+  if(rows.length){ sh.getRange(2,1,rows.length, rows[0].length).setValues(rows); }
+  return ContentService.createTextOutput(JSON.stringify({ok:true, rows:rows.length})).setMimeType(ContentService.MimeType.JSON);
+}
+function doGet(e){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_NAME);
+  if(!sh) return ContentService.createTextOutput(JSON.stringify({state:null, ok:false})).setMimeType(ContentService.MimeType.JSON);
+  const data = sh.getDataRange().getValues(); const header=data.shift(); const idx = Object.fromEntries(header.map((h,i)=>[h,i]));
+  const state={clients:[], txs:[], settings:{}};
+  data.forEach(r=>{ if(!r[idx.entity]) return; if(r[idx.entity]==='client'){ state.clients.push({id:r[idx.id], name:r[idx.name], currency:r[idx.currency]||'USD', commissionRate:Number(r[idx.commissionRate]||0), commissionEnabled:String(r[idx.commissionEnabled])==='true'||r[idx.commissionEnabled]===true, commissionStart:r[idx.commissionStart]||null, notes:r[idx.notes]||''}); } else if(r[idx.entity]==='tx'){ state.txs.push({id:r[idx.id], type:r[idx.type], datetime:r[idx.datetime], clientId:r[idx.clientId]||'', fromId:r[idx.fromId]||'', toId:r[idx.toId]||'', symbol:r[idx.symbol]||'', note:r[idx.note]||'', amount:Number(r[idx.amount]||0), invested:Number(r[idx.invested]||0), pnl:Number(r[idx.pnl]||0), fees:Number(r[idx.fees]||0)}); } else if(r[idx.entity]==='settings'){ try{ state.settings = JSON.parse(r[idx.settingsJson]||'{}'); }catch(err){ state.settings={}; } } });
+  return ContentService.createTextOutput(JSON.stringify({ok:true, state})).setMimeType(ContentService.MimeType.JSON);
+}
+</code></pre></details>
       </div>
     </section>
   </main>
+
+  <div class="sticky-footer">
+    <a class="btn small" href="#" id="linkA2HS"><i class="ti ti-device-mobile"></i> Añadir a inicio</a>
+    <a class="btn small" href="#" id="linkHelp"><i class="ti ti-help"></i> Ayuda</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script>
-    // --- Estado y utilidades
-    const LS_KEY = 'poolMinimalApp';
-    const $ = (s,el=document)=>el.querySelector(s);
-    const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
-    const nowLocalISO = ()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
-    const uid = ()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
-    const fmt = (n,c='USD',l='en-US')=> new Intl.NumberFormat(l,{style:'currency',currency:c}).format(n||0);
-    const round2 = n=>Math.round((n+Number.EPSILON)*100)/100;
-    const defaultState={clients:[],txs:[],settings:{currency:'USD',locale:'en-US',positiveOnly:true}};
-    let state=load();
-    function load(){try{return JSON.parse(localStorage.getItem(LS_KEY))||structuredClone(defaultState)}catch(e){return structuredClone(defaultState)}}
-    function save(){localStorage.setItem(LS_KEY,JSON.stringify(state))}
+  // ---------------- Estado & Utils
+  const LS_KEY = 'traderPoolApp_v4';
+  const $ = (s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+  const nowLocalISO=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
+  const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+  const fmt=(n,c='USD',l='en-US')=> new Intl.NumberFormat(l,{style:'currency',currency:c}).format(n||0);
+  const round2=n=>Math.round((n+Number.EPSILON)*100)/100;
 
-    // --- Tabs
-    $$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{ $$('.tab-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $$('.tabpanel').forEach(p=>p.classList.add('hidden')); $('#'+b.dataset.tab).classList.remove('hidden'); if(b.dataset.tab==='dashboard') refreshDashboard(); if(b.dataset.tab==='ops') refreshOpsUI(); if(b.dataset.tab==='clients') renderClients(); }));
+  const defaultState={clients:[],txs:[],settings:{currency:'USD',locale:'en-US',positiveOnly:true}};
+  let state=load(); function load(){try{return JSON.parse(localStorage.getItem(LS_KEY))||structuredClone(defaultState)}catch(e){return structuredClone(defaultState)}}
+  function save(){localStorage.setItem(LS_KEY,JSON.stringify(state))}
 
-    // --- Clientes
-    let editingClientId=null;
-    function clearClientForm(){editingClientId=null; $('#c_name').value=''; $('#c_currency').value=state.settings.currency; $('#c_commission').value='20'; $('#c_commission_enabled').value='true'; $('#c_notes').value='';}
-    $('#btnNewClient').addEventListener('click',clearClientForm);
-    $('#clientForm').addEventListener('submit',function(e){
-      e.preventDefault();
-      const c={id:editingClientId||uid(),name:$('#c_name').value.trim(),currency:$('#c_currency').value,commissionRate:parseFloat($('#c_commission').value||'0')/100,commissionEnabled:$('#c_commission_enabled').value==='true',notes:$('#c_notes').value||''};
-      if(!c.name) return alert('Nombre obligatorio');
-      const i=state.clients.findIndex(x=>x.id===c.id);
-      if(i>=0) state.clients[i]=c; else state.clients.push(c);
-      save(); renderClients(); fillClientSelects(); clearClientForm();
-    });
-    function renderClients(){
-      const tbody=$('#clientsTable tbody'); tbody.innerHTML='';
-      const shares=balancesAt(new Date().toISOString());
-      const total=[...shares.values()].reduce((s,x)=>s+x,0) || 0;
-      for(const c of state.clients){
-        const bal=round2(shares.get(c.id)||0);
-        const pct=total? ((bal/total)*100).toFixed(2)+'%':'—';
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td><strong>${c.name}</strong></td><td>${fmt(bal,c.currency,state.settings.locale)}</td><td>${pct}</td><td>${c.commissionEnabled? `<span class="pill">${(c.commissionRate*100).toFixed(1)}%</span>`:'<span class="pill">off</span>'}</td>
-        <td class="num actions"><button class="btn secondary" data-act="edit" data-id="${c.id}">Editar</button><button class="btn secondary" data-act="del" data-id="${c.id}">Eliminar</button></td>`;
-        tbody.appendChild(tr);
-      }
-      tbody.querySelectorAll('button').forEach(btn=>{
-        const id=btn.dataset.id, act=btn.dataset.act;
-        btn.addEventListener('click',()=>{
-          if(act==='edit'){
-            const c=state.clients.find(x=>x.id===id); if(!c) return;
-            editingClientId=c.id; $('#c_name').value=c.name; $('#c_currency').value=c.currency;
-            $('#c_commission').value=(c.commissionRate*100).toFixed(2);
-            $('#c_commission_enabled').value=String(c.commissionEnabled);
-            $('#c_notes').value=c.notes||'';
-          } else if(act==='del'){
-            if(confirm('¿Eliminar cliente y sus movimientos?')){
-              state.clients=state.clients.filter(x=>x.id!==id);
-              state.txs=state.txs.filter(x=>x.clientId!==id&&x.fromId!==id&&x.toId!==id);
-              save(); renderClients(); refreshOpsUI(); refreshDashboard();
-            }
-          }
-        });
-      });
-    }
-    function fillClientSelects(){
-      const opts=state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-      $('#t_client').innerHTML='<option value="">— Elegir —</option>'+opts;
-      $('#trf_from').innerHTML=opts; $('#trf_to').innerHTML=opts;
-    }
+  // ---------------- Tabs
+  $$('.tab-btn').forEach(b=>b.addEventListener('click',()=>{ $$('.tab-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $$('.tabpanel').forEach(p=>p.classList.remove('active')); $('#'+b.dataset.tab).classList.add('active'); if(b.dataset.tab==='tablero') refreshDashboard(); if(b.dataset.tab==='operaciones') refreshOpsUI(); }))
 
-    // --- Movimientos
-    let editingTxId=null;
-    function clearTxForm(){
-      editingTxId=null;
-      $('#t_type').value='deposit'; $('#t_datetime').value=nowLocalISO();
-      $('#t_client').value=''; $('#t_symbol').value=''; $('#t_amount').value=''; $('#t_note').value='';
-      $('#tr_invested').value=''; $('#tr_pnl').value=''; $('#tr_fees').value='0';
-      $('#trf_from').value=''; $('#trf_to').value=''; $('#trf_amount').value='';
-      showTxFormBoxes();
-    }
-    $('#btnNewTx').addEventListener('click',clearTxForm);
-    $('#t_type').addEventListener('change',showTxFormBoxes);
-    function showTxFormBoxes(){
-      const type=$('#t_type').value;
-      $('#boxTrade').classList.toggle('hidden',type!=='trade');
-      $('#boxMoney').classList.toggle('hidden',!(type==='deposit'||type==='withdrawal'));
-      $('#boxClient').classList.toggle('hidden',!(type==='deposit'||type==='withdrawal'));
-      $('#boxTransfer').classList.toggle('hidden',type!=='transfer');
-    }
-    $('#txForm').addEventListener('submit',function(e){
-      e.preventDefault();
-      const type=$('#t_type').value;
-      const datetime=$('#t_datetime').value;
-      if(!datetime) return alert('Fecha/hora requerida');
-      const iso=new Date(datetime).toISOString();
-      let tx={id:editingTxId||uid(),type,datetime:iso,symbol:$('#t_symbol').value||'',note:$('#t_note').value||''};
-      if(type==='trade'){
-        tx.invested=parseNum($('#tr_invested').value);
-        tx.pnl=parseNum($('#tr_pnl').value);
-        tx.fees=parseNum($('#tr_fees').value)||0;
-        if(isNaN(tx.invested)||isNaN(tx.pnl)) return alert('Datos de trade inválidos');
-      } else if(type==='transfer'){
-        const fromId=$('#trf_from').value, toId=$('#trf_to').value;
-        const amount=parseNum($('#trf_amount').value);
-        if(!fromId||!toId) return alert('Selecciona origen y destino');
-        if(fromId===toId) return alert('Origen y destino no pueden ser el mismo');
-        if(isNaN(amount)||amount<=0) return alert('Monto inválido');
-        tx.fromId=fromId; tx.toId=toId; tx.amount=amount;
-      } else {
-        const clientId=$('#t_client').value;
-        if(!clientId) return alert('Selecciona cliente');
-        tx.clientId=clientId;
-        const amt=parseNum($('#t_amount').value);
-        if(isNaN(amt)) return alert('Monto inválido');
-        tx.amount=amt;
-        if(type==='withdrawal' && amt<0) tx.amount=-amt;
-        if(type==='deposit' && amt<0){tx.type='withdrawal'; tx.amount=-amt;}
-      }
-      const i=state.txs.findIndex(x=>x.id===tx.id);
-      if(i>=0) state.txs[i]=tx; else state.txs.push(tx);
-      sortTxs(); save(); clearTxForm(); renderTxs(); renderClients(); refreshDashboard();
-    });
-    function sortTxs(){ state.txs.sort((a,b)=> new Date(a.datetime)-new Date(b.datetime)) }
-    function parseNum(v){const n=parseFloat(v); return isNaN(n)? NaN:n}
-    function renderTxs(){
-      const tbody=$('#txTable tbody'); tbody.innerHTML='';
-      for(const tx of state.txs){
-        const d=new Date(tx.datetime);
-        let who='—',concept='',amt='—',pnl='—',fee='—',typeTxt='';
-        if(tx.type==='deposit'||tx.type==='withdrawal'){
-          typeTxt=tx.type==='deposit'?'Depósito':'Retiro';
-          who = state.clients.find(c=>c.id===tx.clientId)?.name||'—';
-          amt=fmt(tx.amount,state.settings.currency,state.settings.locale); concept=tx.symbol||tx.note||'';
-        } else if(tx.type==='trade'){
-          typeTxt='Trade';
-          who='Pool'; concept=tx.symbol||tx.note||'';
-          amt=fmt(tx.invested,state.settings.currency,state.settings.locale);
-          pnl=fmt(tx.pnl,state.settings.currency,state.settings.locale);
-          fee=fmt(tx.fees||0,state.settings.currency,state.settings.locale);
-        } else if(tx.type==='transfer'){
-          typeTxt='Transferencia';
-          const from=state.clients.find(c=>c.id===tx.fromId)?.name||'—';
-          const to=state.clients.find(c=>c.id===tx.toId)?.name||'—';
-          who = `${from} → ${to}`; concept=tx.symbol||tx.note||'Transferencia';
-          amt=fmt(tx.amount,state.settings.currency,state.settings.locale);
-        }
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${d.toLocaleString('es-MX').replace('T',' ')}</td><td>${typeTxt}</td><td>${who}</td><td>${concept}</td><td class="num">${amt}</td><td class="num">${pnl}</td><td class="num">${fee}</td>
-        <td class="num actions"><button class="btn secondary" data-edit="${tx.id}">Editar</button><button class="btn secondary" data-del="${tx.id}">Eliminar</button></td>`;
-        tbody.appendChild(tr);
-      }
-      tbody.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
-        const id=b.dataset.del; if(confirm('¿Eliminar movimiento?')){
-          state.txs=state.txs.filter(x=>x.id!==id); save(); renderTxs(); refreshDashboard(); renderClients();
-        }
-      }));
-      tbody.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{
-        const id=b.dataset.edit; const tx=state.txs.find(x=>x.id===id); if(!tx) return;
-        editingTxId=id; $('#t_type').value=tx.type; $('#t_datetime').value=tx.datetime.slice(0,16);
-        $('#t_symbol').value=tx.symbol||''; $('#t_note').value=tx.note||'';
-        showTxFormBoxes();
-        if(tx.type==='trade'){
-          $('#tr_invested').value=tx.invested; $('#tr_pnl').value=tx.pnl; $('#tr_fees').value=tx.fees||0;
-        } else if(tx.type==='transfer'){
-          $('#trf_from').value=tx.fromId; $('#trf_to').value=tx.toId; $('#trf_amount').value=tx.amount;
-        } else { $('#t_client').value=tx.clientId; $('#t_amount').value=tx.amount; }
-      });
-    }
+  // ---------------- Clientes
+  let editingClientId=null; const elsClient={name:$('#c_name'),currency:$('#c_currency'),commission:$('#c_commission'),enabled:$('#c_commission_enabled'),start:$('#c_commission_start'),notes:$('#c_notes')};
+  function clearClientForm(){editingClientId=null; elsClient.name.value=''; elsClient.currency.value=state.settings.currency; elsClient.commission.value='20'; elsClient.enabled.value='true'; elsClient.start.value=''; elsClient.notes.value=''}
+  function saveClient(){const c={id:editingClientId||uid(),name:elsClient.name.value.trim(),currency:elsClient.currency.value,commissionRate:parseFloat(elsClient.commission.value||'0')/100,commissionEnabled:elsClient.enabled.value==='true',commissionStart:elsClient.start.value? new Date(elsClient.start.value).toISOString():null,notes:elsClient.notes.value||''}; if(!c.name) return alert('Nombre obligatorio'); const i=state.clients.findIndex(x=>x.id===c.id); if(i>=0) state.clients[i]=c; else state.clients.push(c); save(); renderClients(); fillClientSelects(); clearClientForm(); }
+  $('#btnSaveClient').addEventListener('click',async()=>{ saveClient(); await maybeAutoSync(); });
+  $('#btnNewClient').addEventListener('click',clearClientForm); $('#searchClient').addEventListener('input',renderClients);
 
-    // --- Modelo Pool
-    function commissionForClient(client, basePnl){ if(!client.commissionEnabled) return 0; if(state.settings.positiveOnly && basePnl<=0) return 0; return round2((client.commissionRate||0) * basePnl); }
-    function balancesAt(isoAt){
-      const map=new Map(); for(const c of state.clients) map.set(c.id,0);
-      const ordered=[...state.txs].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime));
-      for(const tx of ordered){
-        if(new Date(tx.datetime) > new Date(isoAt)) break;
-        if(tx.type==='deposit'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0) + tx.amount)); }
-        else if(tx.type==='withdrawal'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0) - tx.amount)); }
-        else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0) - tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0) + tx.amount)); }
-        else if(tx.type==='trade'){ allocateTrade(map, tx); }
-      }
-      return map;
-    }
-    function allocateTrade(map, trade){
-      const total=[...map.values()].reduce((s,x)=>s+x,0); if(total<=0) return;
-      const base=(trade.pnl||0)-(trade.fees||0);
-      for(const c of state.clients){
-        const bal=map.get(c.id)||0; if(bal<=0) continue;
-        const w=bal/total; const pnlShare=round2(base*w);
-        const comm=commissionForClient(c, pnlShare);
-        map.set(c.id, round2(bal + pnlShare - comm));
-      }
-    }
+  function renderClients(){ const q=$('#searchClient').value?.toLowerCase()||''; const tbody=$('#clientsTable tbody'); tbody.innerHTML=''; const shares = balancesAt(new Date().toISOString()); const total = [...shares.values()].reduce((s,x)=>s+x,0) || 0; for(const c of state.clients.filter(x=>x.name.toLowerCase().includes(q))){ const bal = round2(shares.get(c.id)||0); const pct = total? ((bal/total)*100).toFixed(2)+'%':'—'; const tr=document.createElement('tr'); tr.innerHTML=`<td><strong>${c.name}</strong> <span class="muted">${c.notes? '· '+c.notes:''}</span></td><td>${fmt(bal,c.currency,state.settings.locale)}</td><td>${pct}</td><td>${c.commissionEnabled? `<span class="pill">${(c.commissionRate*100).toFixed(1)}%</span>`:'<span class="pill">off</span>'}</td><td class="right"><button class="btn small" data-act="edit" data-id="${c.id}"><i class="ti ti-edit"></i> Editar</button> <button class="btn small" data-act="del" data-id="${c.id}"><i class="ti ti-trash"></i> Eliminar</button></td>`; tbody.appendChild(tr); }
+    tbody.querySelectorAll('button').forEach(btn=>{const id=btn.dataset.id; const act=btn.dataset.act; btn.addEventListener('click',()=>{ if(act==='edit'){const c=state.clients.find(x=>x.id===id); if(!c) return; editingClientId=c.id; elsClient.name.value=c.name; elsClient.currency.value=c.currency; elsClient.commission.value=(c.commissionRate*100).toFixed(2); elsClient.enabled.value=String(c.commissionEnabled); elsClient.start.value=c.commissionStart? localDT(c.commissionStart):''; elsClient.notes.value=c.notes||''; document.querySelector('[data-tab="clientes"]').click();} else if(act==='del'){ if(confirm('¿Eliminar cliente y sus movimientos?')){ state.clients=state.clients.filter(x=>x.id!==id); state.txs=state.txs.filter(x=>!(x.type!=='trade' && (x.clientId===id || x.fromId===id || x.toId===id))); save(); renderClients(); refreshOpsUI(); refreshDashboard(); } } })}) }
 
-    // --- Dashboard
-    function refreshDashboard(){
-      const nowISO=new Date().toISOString();
-      const bal=balancesAt(nowISO);
-      const pool=[...bal.values()].reduce((s,x)=>s+x,0);
-      $('#k_pool').textContent=fmt(pool,state.settings.currency,state.settings.locale);
-      const trades=state.txs.filter(x=>x.type==='trade').length; $('#k_trades').textContent=trades;
-      let comms=0;
-      const map=new Map(); for(const c of state.clients) map.set(c.id,0);
-      const ord=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime));
-      for(const tx of ord){
-        if(tx.type==='deposit'){ map.set(tx.clientId, (map.get(tx.clientId)||0)+tx.amount);}
-        else if(tx.type==='withdrawal'){ map.set(tx.clientId, (map.get(tx.clientId)||0)-tx.amount);}
-        else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0)-tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0)+tx.amount));}
-        else {
-          const base=(tx.pnl||0)-(tx.fees||0); const pool=[...map.values()].reduce((s,x)=>s+x,0);
-          if(pool>0){ for(const c of state.clients){ const bal=map.get(c.id)||0;
-            if(bal<=0) continue; const share=base*(bal/pool);
-            comms += commissionForClient(c, share); map.set(c.id, round2(bal + share - commissionForClient(c,share)));
-          }}
-        }
-      }
-      $('#k_comms').textContent=fmt(comms,state.settings.currency,state.settings.locale);
+  function fillClientSelects(){ const opts=state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join(''); const el=$('#t_client'); const prev=el.value; el.innerHTML='<option value="">— Elegir —</option>'+opts; if(prev) el.value=prev; const el2=$('#d_client'); const prev2=el2.value; el2.innerHTML='<option value="">— Elegir —</option>'+opts; if(prev2) el2.value=prev2; $('#trf_from').innerHTML=opts; $('#trf_to').innerHTML=opts; $('#p_recipient').innerHTML='<option value="">— Elegir —</option>'+opts; }
 
-      // Chart
-      const series=poolSeries();
-      drawLineChart('chartPool', series.labels, series.values);
+  // ---------------- Operaciones
+  let editingTxId=null; const dt=$('#t_datetime'); dt.value=nowLocalISO();
+  $('#t_type').addEventListener('change',()=>{ const type=$('#t_type').value; const isTrade=type==='trade'; const isMoney=(type==='deposit'||type==='withdrawal'); const isTransfer=type==='transfer'; $('#boxTrade').style.display=isTrade?'grid':'none'; $('#boxMoney').style.display=isMoney?'grid':'none'; $('#boxClient').style.display=isMoney?'block':'none'; $('#boxTransfer').style.display=isTransfer?'block':'none'; if(isTrade) $('#tr_recommended').value=''; })
+  function clearTxForm(){editingTxId=null; $('#t_type').value='deposit'; dt.value=nowLocalISO(); $('#t_client').value=''; $('#t_symbol').value=''; $('#t_amount').value=''; $('#t_note').value=''; $('#tr_invested').value=''; $('#tr_pnl').value=''; $('#tr_fees').value='0'; $('#tr_recommended').value=''; $('#trf_from').value=''; $('#trf_to').value=''; $('#trf_amount').value=''; $('#t_type').dispatchEvent(new Event('change'))}
 
-      // Participaciones
-      const tbody=$('#tblShares tbody'); tbody.innerHTML='';
-      const total=pool||1;
-      for(const c of state.clients){
-        const balc=round2(bal.get(c.id)||0);
-        const pct=((balc/total)*100)||0;
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${c.name}</td><td class="num">${fmt(balc,c.currency,state.settings.locale)}</td><td class="num">${pct.toFixed(2)}%</td>`;
-        tbody.appendChild(tr);
-      }
-    }
-    function poolSeries(){
-      const labels=[], values=[];
-      const map=new Map(); for(const c of state.clients) map.set(c.id,0);
-      const ordered=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime));
-      for(const tx of ordered){
-        if(tx.type==='deposit'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)+tx.amount);}
-        else if(tx.type==='withdrawal'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)-tx.amount);}
-        else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0)-tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0)+tx.amount);}
-        else { allocateTrade(map, tx);}
-        labels.push(tx.datetime.slice(0,16).replace('T',' '));
-        values.push(round2([...map.values()].reduce((s,x)=>s+x,0)));
-      }
-      return {labels, values};
-    }
-    function drawLineChart(id,labels,data){
-      const el=$(id); if(!el) return;
-      const ctx=el.getContext('2d');
-      if(el._chart) el._chart.destroy();
-      el._chart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,label:'Pool',borderColor:'#2196f3',backgroundColor:'rgba(33,150,243,0.2)',fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:true}}}});
-    }
+  function saveTx(){ const type=$('#t_type').value; const datetime=$('#t_datetime').value; if(!datetime) return alert('Fecha/hora requerida'); const iso=new Date(datetime).toISOString(); let tx={id:editingTxId||uid(),type,datetime:iso,symbol:$('#t_symbol').value||'',note:$('#t_note').value||''}; if(type==='trade'){ tx.invested=parseNum($('#tr_invested').value); tx.pnl=parseNum($('#tr_pnl').value); tx.fees=parseNum($('#tr_fees').value)||0; if(isNaN(tx.invested)||isNaN(tx.pnl)) return alert('Datos de trade inválidos'); } else if(type==='transfer'){ const fromId=$('#trf_from').value, toId=$('#trf_to').value; const amount=parseNum($('#trf_amount').value); if(!fromId||!toId) return alert('Selecciona origen y destino'); if(fromId===toId) return alert('Origen y destino no pueden ser el mismo'); if(isNaN(amount)||amount<=0) return alert('Monto inválido'); tx.fromId=fromId; tx.toId=toId; tx.amount=amount; } else { const clientId=$('#t_client').value; if(!clientId) return alert('Selecciona cliente'); tx.clientId=clientId; const amt=parseNum($('#t_amount').value); if(isNaN(amt)) return alert('Monto inválido'); tx.amount=amt; if(type==='withdrawal' && amt<0) tx.amount=-amt; if(type==='deposit' && amt<0){tx.type='withdrawal'; tx.amount=-amt;} }
+    const i=state.txs.findIndex(x=>x.id===tx.id); if(i>=0) state.txs[i]=tx; else state.txs.push(tx); sortTxs(); save(); clearTxForm(); renderTxs(); renderClients(); refreshDashboard(); }
+  $('#btnSaveTx').addEventListener('click',async()=>{ saveTx(); await maybeAutoSync(); }); $('#btnNewTx').addEventListener('click',clearTxForm);
 
-    // --- Configuración y respaldo
-    $('#settingsForm').addEventListener('submit',function(e){
-      e.preventDefault();
-      state.settings.currency=$('#s_currency').value;
-      state.settings.locale=$('#s_locale').value;
-      state.settings.positiveOnly=$('#s_positive_only').value==='true';
-      save(); renderClients(); refreshDashboard(); alert('Guardado');
-    });
-    $('#btnExportJSON').addEventListener('click',()=>{
-      const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
-      const a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);
-      a.download='pool_backup.json';
-      a.click();
-    });
-    $('#fileImport').addEventListener('change',e=>{
-      const f=e.target.files[0]; if(!f) return;
-      const r=new FileReader();
-      r.onload=()=>{ try{
-        const data=JSON.parse(r.result);
-        if(!data.clients||!data.txs) throw new Error('Archivo inválido');
-        state=data; save(); location.reload();
-      }catch(err){ alert('Error: '+err.message) } };
-      r.readAsText(f);
-    });
+  function sortTxs(){ state.txs.sort((a,b)=> new Date(a.datetime)-new Date(b.datetime)) }
+  function parseNum(v){const n=parseFloat(v); return isNaN(n)? NaN:n}
+  function localDT(iso){const d=new Date(iso); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16)}
 
-    // --- Inicialización
-    function init(){
-      renderClients(); fillClientSelects(); refreshOpsUI(); refreshDashboard();
+  function renderTxs(){ const tbody=$('#txTable tbody'); tbody.innerHTML=''; const ffrom=$('#f_from').value? new Date($('#f_from').value):null; const fto=$('#f_to').value? new Date($('#f_to').value+'T23:59:59'):null; for(const tx of state.txs){ const d=new Date(tx.datetime); if(ffrom && d<ffrom) continue; if(fto && d>fto) continue; const row=document.createElement('tr'); let who='—',concept=''; let amt='—', pnl='—', fee='—', alloc='—', typeTxt=''; if(tx.type==='deposit'||tx.type==='withdrawal'){ typeTxt= tx.type==='deposit'?'Depósito':'Retiro'; who = state.clients.find(c=>c.id===tx.clientId)?.name||'—'; amt=fmt(tx.amount,state.settings.currency,state.settings.locale); concept=tx.symbol||tx.note||''; } else if(tx.type==='trade'){ typeTxt='Trade'; who='Pool'; concept=tx.symbol||tx.note||''; amt=fmt(tx.invested,state.settings.currency,state.settings.locale); pnl=fmt(tx.pnl,state.settings.currency,state.settings.locale); fee=fmt(tx.fees||0,state.settings.currency,state.settings.locale); alloc=`<button class="btn small" data-alloc="${tx.id}"><i class="ti ti-chart-pie"></i> Ver asignación</button>`; } else if(tx.type==='transfer'){ typeTxt='Transferencia'; const from=state.clients.find(c=>c.id===tx.fromId)?.name||'—'; const to=state.clients.find(c=>c.id===tx.toId)?.name||'—'; who = `${from} → ${to}`; concept=tx.symbol||tx.note||'Transferencia'; amt=fmt(tx.amount,state.settings.currency,state.settings.locale); } row.innerHTML=`<td class="mono">${localDT(tx.datetime).replace('T',' ')}</td><td>${typeTxt}</td><td>${who}</td><td>${concept}</td><td class="right">${amt}</td><td class="right">${pnl}</td><td class="right">${fee}</td><td class="right">${alloc}</td><td class="right"><button class="btn small" data-edit="${tx.id}"><i class="ti ti-edit"></i> Editar</button> <button class="btn small" data-del="${tx.id}"><i class="ti ti-trash"></i> Eliminar</button></td>`; tbody.appendChild(row); }
+    tbody.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.del; if(confirm('¿Eliminar movimiento?')){state.txs=state.txs.filter(x=>x.id!==id); save(); renderTxs(); refreshDashboard(); renderClients();}}));
+    tbody.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.edit; const tx=state.txs.find(x=>x.id===id); if(!tx) return; editingTxId=id; $('#t_type').value=tx.type; $('#t_datetime').value=localDT(tx.datetime); $('#t_symbol').value=tx.symbol||''; $('#t_note').value=tx.note||''; $('#t_type').dispatchEvent(new Event('change')); if(tx.type==='trade'){ $('#tr_invested').value=tx.invested; $('#tr_pnl').value=tx.pnl; $('#tr_fees').value=tx.fees||0; } else if(tx.type==='transfer'){ $('#trf_from').value=tx.fromId; $('#trf_to').value=tx.toId; $('#trf_amount').value=tx.amount; } else { $('#t_client').value=tx.clientId; $('#t_amount').value=tx.amount; } document.querySelector('[data-tab="operaciones"]').click(); }));
+    tbody.querySelectorAll('[data-alloc]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.alloc; showAllocation(id)})); }
+
+  // ---------------- Modelo Pool
+  function commissionForClient(client, basePnl, tradeDateISO){ if(!client.commissionEnabled) return 0; if(client.commissionStart && new Date(tradeDateISO) < new Date(client.commissionStart)) return 0; if(state.settings.positiveOnly && basePnl<=0) return 0; return round2((client.commissionRate||0) * basePnl); }
+  function balancesAt(isoAt){ const map=new Map(); for(const c of state.clients) map.set(c.id,0); const ordered=[...state.txs].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime)); for(const tx of ordered){ if(new Date(tx.datetime) > new Date(isoAt)) break; if(tx.type==='deposit'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0) + tx.amount)); } else if(tx.type==='withdrawal'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0) - tx.amount)); } else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0) - tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0) + tx.amount)); } else if(tx.type==='trade'){ allocateTrade(map, tx); } } return map; }
+  function allocateTrade(map, trade){ const total=[...map.values()].reduce((s,x)=>s+x,0); if(total<=0) return; const base= (trade.pnl||0) - (trade.fees||0); for(const c of state.clients){ const bal=map.get(c.id)||0; if(bal<=0) continue; const w=bal/total; const pnlShare=round2(base*w); const comm=commissionForClient(c, pnlShare, trade.datetime); map.set(c.id, round2(bal + pnlShare - comm)); } }
+
+  // ---------------- Recomendación 10%
+  $('#btnCalc10').addEventListener('click',()=>{ const dt=$('#t_datetime').value; if(!dt) return alert('Elige fecha/hora'); const pool=totalPoolAt(new Date(dt).toISOString()); $('#tr_recommended').value= round2(pool*0.10) });
+  $('#btnUseRecommended').addEventListener('click',()=>{ const v=$('#tr_recommended').value; if(v) $('#tr_invested').value=v });
+  function totalPoolAt(isoAt){ const m=balancesAt(isoAt); return round2([...m.values()].reduce((s,x)=>s+x,0)); }
+
+  // ---------------- Dashboard
+  function refreshDashboard(){ const nowISO=new Date().toISOString(); const bal=balancesAt(nowISO); const pool=[...bal.values()].reduce((s,x)=>s+x,0); $('#k_pool').textContent=fmt(pool,state.settings.currency,state.settings.locale); const trades=state.txs.filter(x=>x.type==='trade').length; $('#k_trades').textContent=trades; let deps=0,wds=0; for(const tx of state.txs){ if(tx.type==='deposit') deps+=tx.amount; else if(tx.type==='withdrawal') wds+=tx.amount; } $('#k_deps').textContent=fmt(deps,state.settings.currency,state.settings.locale); $('#k_wds').textContent=fmt(wds,state.settings.currency,state.settings.locale); const comms = totalCommissions(); $('#k_comms').textContent=fmt(comms,state.settings.currency,state.settings.locale); const pnlNet = totalPoolPnLNet(); $('#k_pnl').textContent=fmt(pnlNet,state.settings.currency,state.settings.locale); const series=poolSeries(); drawLineChart('chartPool', series.labels, series.values, 'Pool'); const tbody=$('#tblShares tbody'); tbody.innerHTML=''; const total=pool||1; for(const c of state.clients){ const balc=round2(bal.get(c.id)||0); const pct=((balc/total)*100)||0; const tr=document.createElement('tr'); tr.innerHTML=`<td>${c.name}</td><td>${fmt(balc,c.currency,state.settings.locale)}</td><td>${pct.toFixed(2)}%</td>`; tbody.appendChild(tr); } const cid=$('#d_client').value || (state.clients[0]?.id||''); if(!cid){ $('#dc_balance').textContent='—'; return; } $('#d_client').value=cid; const clientStats=clientStatsNow(cid); $('#dc_balance').textContent=fmt(clientStats.balance, clientStats.currency, state.settings.locale); $('#dc_pnl').textContent=fmt(clientStats.pnlAssigned, clientStats.currency, state.settings.locale); $('#dc_comm').textContent=fmt(clientStats.commissions, clientStats.currency, state.settings.locale); const cs=clientSeries(cid); drawLineChart('chartClient', cs.labels, cs.values, 'Saldo'); }
+  $('#btnRefreshDash').addEventListener('click',refreshDashboard);
+
+  function poolSeries(){ const labels=[], values=[]; const map=new Map(); for(const c of state.clients) map.set(c.id,0); const ordered=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime)); for(const tx of ordered){ if(tx.type==='deposit'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)+tx.amount)); } else if(tx.type==='withdrawal'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)-tx.amount)); } else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0)-tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0)+tx.amount)); } else { allocateTrade(map, tx); } labels.push(tx.datetime.slice(0,16).replace('T',' ')); values.push(round2([...map.values()].reduce((s,x)=>s+x,0))); } return {labels, values}; }
+  function clientSeries(clientId){ const labels=[], values=[]; const map=new Map(); for(const c of state.clients) map.set(c.id,0); const ordered=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime)); for(const tx of ordered){ if(tx.type==='deposit'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)+tx.amount)); } else if(tx.type==='withdrawal'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)-tx.amount)); } else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0)-tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0)+tx.amount)); } else { allocateTrade(map, tx); } labels.push(tx.datetime.slice(0,16).replace('T',' ')); values.push(round2(map.get(clientId)||0)); } return {labels, values}; }
+  function clientStatsNow(clientId){ const map=balancesAt(new Date().toISOString()); const balance=round2(map.get(clientId)||0); let pnl=0, com=0; const m=new Map(); for(const c of state.clients) m.set(c.id,0); const ord=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime)); for(const tx of ord){ if(tx.type==='deposit'){ m.set(tx.clientId, round2((m.get(tx.clientId)||0)+tx.amount)); } else if(tx.type==='withdrawal'){ m.set(tx.clientId, round2((m.get(tx.clientId)||0)-tx.amount)); } else if(tx.type==='transfer'){ m.set(tx.fromId, round2((m.get(tx.fromId)||0)-tx.amount)); m.set(tx.toId, round2((m.get(tx.toId)||0)+tx.amount)); } else { const total=[...m.values()].reduce((s,x)=>s+x,0); if(total>0){ const base=(tx.pnl||0)-(tx.fees||0); const w=(m.get(clientId)||0)/total; const share=round2(base*w); const client=state.clients.find(c=>c.id===clientId); const cm=commissionForClient(client,share,tx.datetime); pnl+=share; com+=cm; m.set(clientId, round2((m.get(clientId)||0)+share-cm)); } } } const currency= state.clients.find(c=>c.id===clientId)?.currency || state.settings.currency; return {balance, pnlAssigned:round2(pnl), commissions:round2(com), currency}; }
+  function totalCommissions(){ let total=0; const map=new Map(); for(const c of state.clients) map.set(c.id,0); const ord=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime)); for(const tx of ord){ if(tx.type==='deposit'){ map.set(tx.clientId, (map.get(tx.clientId)||0)+tx.amount); } else if(tx.type==='withdrawal'){ map.set(tx.clientId, (map.get(tx.clientId)||0)-tx.amount); } else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0)-tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0)+tx.amount)); } else { const base=(tx.pnl||0)-(tx.fees||0); const pool=[...map.values()].reduce((s,x)=>s+x,0); if(pool>0){ for(const c of state.clients){ const bal=map.get(c.id)||0; if(bal<=0) continue; const share=base*(bal/pool); total += commissionForClient(c, share, tx.datetime); map.set(c.id, round2(bal + share - commissionForClient(c,share,tx.datetime))); } } } } return round2(total); }
+  function totalPoolPnLNet(){ let pnl=0; const ord=state.txs.filter(x=>x.type==='trade'); for(const t of ord){ pnl += (t.pnl||0)-(t.fees||0); } return round2(pnl - totalCommissions()); }
+
+  function refreshOpsUI(){ fillClientSelects(); renderTxs(); }
+
+  // ---------------- Periodo: cálculo y generación de transferencias
+  function calcPeriod(){ const from=$('#p_from').value? new Date($('#p_from').value).toISOString():null; const to=$('#p_to').value? new Date($('#p_to').value).toISOString():null; const baseTotals={count:0, base:0}; const map=new Map(); for(const c of state.clients) map.set(c.id,0); const pnlByClient=new Map(); const commByClient=new Map(); const ord=[...state.txs].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime)); for(const tx of ord){ const t=new Date(tx.datetime); if(tx.type==='deposit'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)+tx.amount)); } else if(tx.type==='withdrawal'){ map.set(tx.clientId, round2((map.get(tx.clientId)||0)-tx.amount)); } else if(tx.type==='transfer'){ map.set(tx.fromId, round2((map.get(tx.fromId)||0)-tx.amount)); map.set(tx.toId, round2((map.get(tx.toId)||0)+tx.amount)); } else if(tx.type==='trade'){ if( (from && t<new Date(from)) || (to && t>new Date(to)) ){ const base=(tx.pnl||0)-(tx.fees||0); const total=[...map.values()].reduce((s,x)=>s+x,0); if(total>0){ for(const c of state.clients){ const bal=map.get(c.id)||0; if(bal<=0) continue; const w=bal/total; const share=round2(base*w); const cm=commissionForClient(c,share,tx.datetime); map.set(c.id, round2(bal + share - cm)); } } } else { baseTotals.count++; const base=(tx.pnl||0)-(tx.fees||0); baseTotals.base+=base; const total=[...map.values()].reduce((s,x)=>s+x,0); if(total>0){ for(const c of state.clients){ const bal=map.get(c.id)||0; if(bal<=0) continue; const w=bal/total; const share=round2(base*w); const cm=commissionForClient(c,share,tx.datetime); pnlByClient.set(c.id, round2((pnlByClient.get(c.id)||0)+share)); commByClient.set(c.id, round2((commByClient.get(c.id)||0)+cm)); map.set(c.id, round2(bal + share - cm)); } } } } }
+    let html=`<div class="notice"><b>Trades en periodo:</b> ${baseTotals.count} · <b>P&L base del pool:</b> ${fmt(baseTotals.base,state.settings.currency,state.settings.locale)}</div>`; html+='<table style="width:100%;margin-top:8px"><thead><tr><th>Cliente</th><th class="right">P&L asignado</th><th class="right">Comisión seg. %</th></tr></thead><tbody>'; for(const c of state.clients){ const pnl=pnlByClient.get(c.id)||0; const com=commByClient.get(c.id)||0; html+=`<tr><td>${c.name}</td><td class="right">${fmt(pnl,c.currency,state.settings.locale)}</td><td class="right">${fmt(com,c.currency,state.settings.locale)}</td></tr>`; } html+='</tbody></table>'; $('#periodResults').innerHTML=html; return {pnlByClient, commByClient}; }
+  $('#btnCalcPeriod').addEventListener('click',calcPeriod);
+  $('#btnGenTransfers').addEventListener('click',()=>{ const rec=$('#p_recipient').value; if(!rec) return alert('Elige receptor'); const r=calcPeriod(); const fromDT=$('#p_from').value? new Date($('#p_from').value): new Date(); const toDT=$('#p_to').value? new Date($('#p_to').value): new Date(); const when=new Date(toDT); for(const c of state.clients){ if(c.id===rec) continue; const com=r.commByClient.get(c.id)||0; if(com>0){ state.txs.push({id:uid(),type:'transfer',datetime:when.toISOString(),fromId:c.id,toId:rec,amount:com,symbol:'Comisión periodo',note:`Comisión ${localDT(fromDT.toISOString()).replace('T',' ')} → ${localDT(toDT.toISOString()).replace('T',' ')}`}); } } sortTxs(); save(); renderTxs(); refreshDashboard(); alert('Transferencias de comisión generadas.'); });
+
+  // ---------------- Export/Import & Settings
+  $('#btnExportJSON').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='trader_pool_backup.json'; a.click(); })
+  $('#fileImport').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!data.clients||!data.txs) throw new Error('Archivo inválido'); state=data; save(); init(); alert('Importado'); }catch(err){ alert('Error: '+err.message) } }; r.readAsText(f); })
+  $('#btnSaveSettings').addEventListener('click',()=>{ state.settings.currency=$('#s_currency').value; state.settings.locale=$('#s_locale').value; state.settings.positiveOnly=$('#s_positive_only').value==='true'; save(); renderClients(); refreshDashboard(); alert('Guardado'); })
+
+  // ---------------- Asignación por trade (modal)
+  function showAllocation(tradeId){ const tx=state.txs.find(x=>x.id===tradeId); if(!tx) return; const before=balancesAt(new Date(new Date(tx.datetime).getTime()-1).toISOString()); const pool=[...before.values()].reduce((s,x)=>s+x,0); const base=(tx.pnl||0)-(tx.fees||0); let html='<div class="pad"><h3>Asignación</h3>'; html+=`<p class="muted">Pool antes del trade: <strong>${fmt(pool,state.settings.currency,state.settings.locale)}</strong> · Base P&L: <strong>${fmt(base,state.settings.currency,state.settings.locale)}</strong></p>`; html+='<table style="width:100%"><thead><tr><th>Cliente</th><th>Saldo previo</th><th>%</th><th>P&L</th><th>Comisión</th><th>Saldo después</th></tr></thead><tbody>'; const temp=new Map(before); for(const c of state.clients){ const bal=before.get(c.id)||0; if(bal<=0) continue; const w=bal/pool; const share=round2(base*w); const comm=commissionForClient(c,share,tx.datetime); const after=round2(bal+share-comm); html+=`<tr><td>${c.name}</td><td class="right">${fmt(bal,c.currency,state.settings.locale)}</td><td class="right">${(w*100).toFixed(2)}%</td><td class="right">${fmt(share,c.currency,state.settings.locale)}</td><td class="right">${fmt(comm,c.currency,state.settings.locale)}</td><td class="right">${fmt(after,c.currency,state.settings.locale)}</td></tr>`; temp.set(c.id,after); } html+='</tbody></table></div>'; const w=window.open('', 'alloc','width=820,height=640'); w.document.write('<body style="background:#0f1222;color:#f2f4ff;font:14px system-ui;">'+html+'</body>') }
+
+  // ---------------- Charts helpers
+  function drawLineChart(id,labels,data,label){ const ctx=document.getElementById(id).getContext('2d'); const prev=ctx._chart; if(prev) prev.destroy(); ctx._chart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label,data,fill:false,tension:.2}]},options:{responsive:true,plugins:{legend:{display:false}}}}) }
+
+  // ---------------- Ayuda
+  $('#linkHelp').addEventListener('click',e=>{e.preventDefault(); const html='<div class="pad"><h3>Cómo funciona</h3><ol><li>Registra <b>depósitos/retiros</b> por cliente.</li><li>Los <b>trades</b> son del pool y se reparten proporcionalmente.</li><li>Usa <b>transferencias</b> para mover saldos (p. ej. cobro de comisión a fin de periodo).</li><li>El bloque <b>Corte de periodo</b> calcula P&L/comisiones por rango y genera transferencias.</li><li>Activa <b>Auto‑sync</b> para sincronizar con Google Sheets al guardar.</li></ol></div>'; const w=window.open('', 'help','width=520,height=560'); w.document.write('<body style="background:#0f1222;color:#f2f4ff;font:14px system-ui;">'+html+'</body>') })
+  $('#linkA2HS').addEventListener('click',e=>{e.preventDefault(); alert('iPhone: Safari → Compartir → “Añadir a pantalla de inicio”.')})
+
+  // ---------------- Google Sheets Sync (cliente)
+  const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // <-- pega aquí tu URL de WebApp
+  async function syncToSheets(){ try{ const payload={method:'sync', state}; const res=await fetch(SHEETS_WEBAPP_URL,{method:'POST',body:JSON.stringify(payload)}); if(!res.ok) throw new Error('HTTP '+res.status); const data=await res.json(); alert('Datos sincronizados ('+(data.rows||0)+' filas)'); } catch(e){ console.error(e); alert('Error al sincronizar. Revisa la URL del WebApp y permisos.'); } }
+  async function loadFromSheets(){ try{ const res=await fetch(SHEETS_WEBAPP_URL+'?method=load'); if(!res.ok) throw new Error('HTTP '+res.status); const data=await res.json(); if(data && data.state){ state=data.state; save(); alert('Datos cargados'); location.reload(); } else alert('Respuesta sin datos'); } catch(e){ console.error(e); alert('Error al cargar. Revisa permisos.'); } }
+  function bindSyncUI(){ const up=$('#btnSyncNow'); const dn=$('#btnLoadNow'); const chk=$('#chkAutoSync'); if(up) up.onclick=syncToSheets; if(dn) dn.onclick=loadFromSheets; if(chk){ chk.onchange=(e)=>localStorage.setItem('autoSyncSheets', e.target.checked?'1':'0'); chk.checked=localStorage.getItem('autoSyncSheets')==='1'; } }
+  async function maybeAutoSync(){ try{ if(localStorage.getItem('autoSyncSheets')==='1') await syncToSheets(); }catch(_){} }
+
+  // ---------------- Init & datos demo
+  function init(){ renderClients(); fillClientSelects(); refreshOpsUI(); refreshDashboard(); bindSyncUI(); }
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(!state.clients.length && !state.txs.length){
+      // Datos demo (puedes borrar luego)
+      const cB={id:uid(),name:'Brandon',currency:'USD',commissionRate:.2,commissionEnabled:true,commissionStart:null,notes:'52.68%'};
+      const cV={id:uid(),name:'Victor', currency:'USD',commissionRate:.2,commissionEnabled:true,commissionStart:null,notes:'44.57%'};
+      const cA={id:uid(),name:'Ander',  currency:'USD',commissionRate:.2,commissionEnabled:true,commissionStart:null,notes:'2.76%'};
+      state.clients.push(cB,cV,cA);
+      const daysAgo=d=>{const x=new Date(); x.setDate(x.getDate()-d); return x.toISOString()};
+      state.txs.push(
+        {id:uid(),type:'deposit',clientId:cB.id,datetime:daysAgo(2),amount:4004.114058,note:'Saldo inicial Brandon'},
+        {id:uid(),type:'deposit',clientId:cV.id,datetime:daysAgo(2),amount:3387.643156,note:'Saldo inicial Victor'},
+        {id:uid(),type:'deposit',clientId:cA.id,datetime:daysAgo(2),amount:209.442786,note:'Saldo inicial Ander'}
+      );
+      sortTxs(); save();
     }
-    function refreshOpsUI(){ fillClientSelects(); renderTxs(); }
-    document.addEventListener('DOMContentLoaded',()=>{
-      if(!state.clients.length && !state.txs.length){
-        // Datos demo
-        const cB={id:uid(),name:'Brandon',currency:'USD',commissionRate:.2,commissionEnabled:true,notes:''};
-        const cV={id:uid(),name:'Victor', currency:'USD',commissionRate:.2,commissionEnabled:true,notes:''};
-        const cA={id:uid(),name:'Ander',  currency:'USD',commissionRate:.2,commissionEnabled:true,notes:''};
-        state.clients.push(cB,cV,cA);
-        const daysAgo=d=>{const x=new Date(); x.setDate(x.getDate()-d); return x.toISOString()};
-        state.txs.push(
-          {id:uid(),type:'deposit',clientId:cB.id,datetime:daysAgo(2),amount:4004.11,note:'Saldo inicial Brandon'},
-          {id:uid(),type:'deposit',clientId:cV.id,datetime:daysAgo(2),amount:3387.64,note:'Saldo inicial Victor'},
-          {id:uid(),type:'deposit',clientId:cA.id,datetime:daysAgo(2),amount:209.44,note:'Saldo inicial Ander'}
-        );
-        sortTxs(); save();
-      }
-      init();
-    });
+    init();
+  });
   </script>
 </body>
 </html>
